@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+    <script>
+        $(document).ready(function () {
+            $('#video_delete').click(function () {
+                $('#inputVideo').show();
+                $('#deleteButtonArea').hide();
+            });
+
+            $('#btn').click(function () {
+                let form = $('#form')[0];
+                let data = new FormData(form);
+
+                $.ajax({
+                    type: "PUT",
+                    enctype: 'multipart/form-data',
+                    url: '/board/'+$('#board_id').val()+'?saveVideoName='+$('#video_name').val(),
+                    data: data,
+                    processData: false,
+                    contentType: false,
+                    cache: false,
+                    success: function (data) {
+                        location.href = '/board/'+$('#board_id').val();
+                    },
+                    error: function (e) {
+                        console.log("ERROR : ", e);
+                    }
+                });
+            });
+        });
+    </script>
+    <style>
+        body {
+            padding-top: 30px;
+            padding-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container" role="main">
+    <h1>Update</h1>
+    <div>
+        <form id="form" enctype="multipart/form-data">
+            <div class="mb-3">
+                <label for="writer">작성자</label>
+                <input type="text" class="form-control" name="writer" id="title"  value="<%= board.writer %>" placeholder="작성자를 입력해 주세요">
+            </div>
+
+            <div class="mb-3">
+                <label for="title">제목</label>
+                <input type="text" class="form-control"  name="subject" value="<%= board.subject %>" placeholder="제목을 입력해 주세요">
+            </div>
+
+            <div class="mb-3">
+                <label for="content">내용</label>
+                <textarea class="form-control" rows="5" name="content" id="content" placeholder="내용을 입력해 주세요" ><%= board.content %></textarea>
+            </div>
+
+            영상 업로드 :
+            <span id="deleteButtonArea">
+                <%= board.video_name %> <button id="video_delete" type="button" class="btn btn-sm btn-danger">삭제</button>
+            </span>
+            <input id="inputVideo" style="display: none" type="file" name="video">
+
+            <button style="margin-left:100px;=" id="btn" class="btn btn-sm btn-primary" type="button">글쓰기</button>
+            <button type="button" class="btn btn-sm btn-primary" onclick="location.href='/board'">목록</button>
+            <input id="board_id" type="hidden" name="id" value="<%= board.id %>"/>
+        </form>
+        <input id="video_name" type="hidden" value=<%=dateParser.dateToFilename(new Date())%> />
+    </div>
+</div>
+
+
+
+<!--<h1>Update</h1>-->
+<!--<div>-->
+<!--    <form id="form" enctype="multipart/form-data">-->
+<!--        영상 업로드 :-->
+<!--        <span id="deleteButtonArea">-->
+<!--            <%= board.video_name %> <button id="video_delete" type="button">삭제</button>-->
+<!--        </span>-->
+<!--        <span>-->
+<!--            <input id="inputVideo" style="display: none" type="file" name="video">-->
+<!--        </span>-->
+
+<!--        <br>-->
+<!--        작성자 : <input name="writer" value="<%= board.writer %>"/>-->
+<!--        <br>-->
+<!--        제목 : <input name="subject" value="<%= board.subject %>"/>-->
+<!--        <br>-->
+<!--        내용 : <textarea name="content"><%= board.content %></textarea>-->
+<!--        <br>-->
+<!--        <input id="board_id" type="hidden" name="id" value="<%= board.id %>"/>-->
+<!--        <button id="btn" type="button">글쓰기</button>-->
+<!--    </form>-->
+<!--    <input id="video_name" type="hidden" value=<%=dateParser.dateToFilename(new Date())%> />-->
+<!--    <button onclick="window.location.href='/board'">목록</button>-->
+
+</div>
+</body>
+</html>

@@ -1,0 +1,11 @@
+{
+  "definition": {
+    "openapi": "3.0.0",
+    "info": {
+      "title": "Board Test",
+      "version": "1.0.0",
+      "description": "Board Swagger Test"
+    }
+  },
+  "apis": ["./*.js"]
+}

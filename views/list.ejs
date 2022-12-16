@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="//code.jquery.com/jquery-1.9.1.js"></script>
+    <script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+    <script>
+        $( document ).ready(function() {
+            $( "#datepickerStart" ).datepicker({
+                changeMonth: true,
+                changeYear: true,
+                dateFormat: 'yy/mm/dd'
+            });
+
+            $( "#datepickerEnd" ).datepicker({
+                changeMonth: true,
+                changeYear: true,
+                dateFormat: 'yy/mm/dd'
+            });
+
+            $('#btnWrite').click(function() {
+                window.location.href = '/board/write';
+            });
+
+
+            $('#search').click(function(){
+                let searchWord = $('#searchWord').val();
+                let startDate = '';
+                let endDate = '';
+                if($( "#datepickerStart" ).datepicker('getDate') != null && $( "#datepickerEnd" ).datepicker('getDate') != null){
+                    let pickerStartDate = $( "#datepickerStart" ).datepicker('getDate');
+                    startDate = pickerStartDate.getFullYear() + '' + (pickerStartDate.getMonth()+1) + '' + pickerStartDate.getDate();
+                    let pickerEndDate = $( "#datepickerEnd" ).datepicker('getDate');
+                    endDate = pickerEndDate.getFullYear() + '' + (pickerEndDate.getMonth()+1) + '' + pickerEndDate.getDate();
+                }
+                window.location.href = `/board?page=1&searchWord=${searchWord}&startDate=${startDate}&endDate=${endDate}`;
+            });
+
+            if($( "#startDate" ).val() !== '' && $( "#endDate" ).val() !== ''){
+                let startDateParam =  $("#startDate" ).val();
+                let startDate = new Date();
+                startDate.setFullYear(startDateParam.substring(0,4));
+                startDate.setMonth(startDateParam.substring(4,6)-1);
+                startDate.setDate(startDateParam.substring(6,8));
+                $('#datepickerStart').datepicker('setDate',startDate);
+
+                let endDateParam = $( "#endDate" ).val();
+                let endDate = new Date();
+                endDate.setFullYear(endDateParam.substring(0,4));
+                endDate.setMonth(endDateParam.substring(4,6)-1);
+                endDate.setDate(endDateParam.substring(6,8));
+                $('#datepickerEnd').datepicker('setDate',endDate);
+            }
+
+
+
+            // $("#searchWord").on("keyup",function(key){
+            //     if(key.keyCode==13) {
+            //         let searchWord = $('#searchWord').val();
+            //         window.location.href = `/board?page=1&searchWord=${searchWord}&startDate=${startDate}&endDate=${endDate}`;
+            //     }
+            // });
+
+
+
+        });
+    </script>
+    <style>
+        body {
+            padding-top: 30px;
+            padding-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container" role="main">
+        <h1>Board List</h1>
+        <div style="margin-bottom: 20px;">
+            <form class="form-inline">
+                <div class="form-group">
+                    <button id="btnWrite" type="button" class="btn btn-primary" style="margin-right: 30px;">글쓰기</button>
+                    시작일:<input style="width:120px;" type="text" readonly="readonly" id="datepickerStart" name="datepickerStart" class="form-control">
+                    종료일:<input style="width:120px; margin-right: 30px;" type="text" readonly="readonly" id="datepickerEnd" name="datepickerEnd" class="form-control">
+                    <div id="datepicker"></div>
+
+                    <input  id="searchWord" name="searchWord" value="<%=searchWord%>"
+                            style="width:200px; " placeholder="제목을 입력해주세요" type="text" class="form-control" >
+                    <button id="search" style="" type="button" class="btn btn-primary">검색</button>
+                </div>
+
+            </form>
+        </div>
+        <div>
+            <table class="table table-striped" style="border-bottom: 1px solid #dee2e6">
+                <thead>
+                <tr>
+                    <th style="width:5%"scope="col">번호</th>
+                    <th style="width:60%" scope="col">제목</th>
+                    <th style="width:13%" scope="col">글쓴이</th>
+                    <th style="width:10%" scope="col">날짜</th>
+                </tr>
+                </thead>
+                <tbody>
+                    <% for (var i = 0; i < boardList.length; i++) { %>
+                    <tr>
+                        <th scope="row"><%=boardList[i].id%></th>
+                        <td><a href="/board/<%= boardList[i].id %>" ><%= boardList[i].subject %> </a></td>
+                        <td><%=boardList[i].writer%></td>
+                        <td><%=dateParser.dateToBoardFormat(boardList[i].reg_date)%></td>
+                    </tr>
+                    <% } %>
+                </tbody>
+            </table>
+        </div>
+        <div style="text-align: center;">
+            <%
+            let pageCnt = Math.floor(totalCount/10) + (totalCount%10 == 0 ? 0 : 1);
+            let startPage = (Math.floor(page/10) + (page%10 == 0 ? -1 : 0)) * 10 + 1;
+            let endPage = startPage + 9;
+            if(endPage > pageCnt){
+                endPage = pageCnt;
+            }
+            %>
+            <% if(page > 10){ %>
+            <button class="btn btn-outline-primary" type="button"
+                    onclick="location.href='/board?page=<%=(startPage-1)%>&searchWord=<%=searchWord%>'">
+                이전
+            </button>
+<!--            <a href="/board?page=<%=(startPage-1)%>&searchWord=<%=searchWord%>">이전</a>-->
+            <% } %>
+
+            <% for (var i = startPage; i <= endPage; i++) { %>
+            <button class="btn btn-outline-primary" type="button"
+                    onclick="location.href='/board?page=<%=i%>&searchWord=<%=searchWord%>&startDate=<%=startDate%>&endDate=<%=endDate%>'">
+                <%=(i)%>
+            </button>
+            <% } %>
+
+            <% if(pageCnt > endPage){ %>
+            <button class="btn btn-outline-primary" type="button"
+                    onclick="location.href='/board?page=<%=(endPage+1)%>&searchWord=<%=searchWord%>'">
+                다음
+            </button>
+<!--            <a href="/board?page=<%=(endPage+1)%>&searchWord=<%=searchWord%>">다음</a>-->
+            <% }%>
+        </div>
+
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!--    <div id="listArea">-->
+<!--        <% for (var i = 0; i < boardList.length; i++) { %>-->
+<!--            <a href="/board/<%= boardList[i].id %>" ><%= boardList[i].subject %> </a>-->
+<!--            <br/>-->
+<!--        <% } %>-->
+<!--    </div>-->
+<!--    <div>-->
+<!--        <button id="btnWrite">쓰기</button>-->
+<!--        <br>-->
+<!--        <input id="searchWord" name="searchWord" value="<%=searchWord%>">-->
+<!--        <button id="search">검색</button>-->
+<!--    </div>-->
+<!--    <div>-->
+        <%
+            // let pageCnt = Math.floor(totalCount/10) + (totalCount%10 == 0 ? 0 : 1);
+            // let startPage = (Math.floor(page/10) + (page%10 == 0 ? -1 : 0)) * 10 + 1;
+            // let endPage = startPage + 9;
+            // if(endPage > pageCnt){
+            //     endPage = pageCnt;
+            // }
+        %>
+<!--        총 페이지의 수는 : <%=pageCnt%>-->
+<!--        ,-->
+<!--        현재 페이지 는 : <%=page%>-->
+<!--        ,-->
+<!--        시작 페이지 INDEX는 : <%=(startPage)%>-->
+
+        <br><br><br>
+
+<!--        <% if(page > 10){ %>-->
+<!--            <a href="/board?page=<%=(startPage-1)%>&searchWord=<%=searchWord%>">이전</a>-->
+<!--        <% } %>-->
+
+<!--        <% for (var i = startPage; i <= endPage; i++) { %>-->
+<!--            <a href="/board?page=<%=i%>&searchWord=<%=searchWord%>"><%=(i)%></a>-->
+<!--        <% } %>-->
+
+<!--        <% if(pageCnt > endPage){ %>-->
+<!--            <a href="/board?page=<%=(endPage+1)%>&searchWord=<%=searchWord%>">다음</a>-->
+<!--        <% }%>-->
+
+
+<!--    </div>-->
+    <input id="page" value="<%=page%>" type="hidden"/>
+    <input id="startDate" value="<%=startDate%>" type="hidden"/>
+    <input id="endDate" value="<%=endDate%>" type="hidden"/>
+</body>
+</html>

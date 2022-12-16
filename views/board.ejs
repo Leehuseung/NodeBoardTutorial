@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+    <script>
+        $( document ).ready(function() {
+            $('#deleteBtn').click(function(){
+
+                $.ajax({
+                    url: "/board/"+$('#boardId').val(),
+                    method: "DELETE",
+                    dataType: "text",
+                    success: function () {
+                        location.href = '/board';
+                    }
+                });
+            });
+        });
+    </script>
+    <style>
+        body {
+            padding-top: 30px;
+            padding-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container" role="main">
+    <h1>Board <%= board.id %></h1>
+    <form name="form" id="form" role="form" method="post" action="/board/write">
+
+        <div class="mb-3">
+            <label for="title">영상</label>
+            <div style="border:1px solid black; padding: 20px; border-radius: 10px; text-align: center">
+                <video controls width="250">
+                    <source src="/video/<%=board.video_path%>" type="video/mp4">
+                </video>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label for="title">제목</label>
+            <div style="border:1px solid black; padding: 20px; border-radius: 10px;">
+                <%= board.subject %>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label for="reg_id">작성자</label>
+            <div style="border:1px solid black; padding: 20px; border-radius: 10px;">
+                <%= board.writer %>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label for="content">내용</label>
+            <div style="border:1px solid black; padding: 20px; border-radius: 10px;">
+                <%= board.content %>
+            </div>
+        </div>
+
+    </form>
+        <input id="boardId" type="hidden" name="id" value="<%= board.id %>"/>
+    <div >
+        <button type="button" class="btn btn-sm btn-primary" id="btnList" onclick="location.href='/board'">목록</button>
+        <button id="modBtn" onclick="location.href='/board/update/<%=board.id%>'" class="btn btn-sm btn-primary" >수정</button>
+        <button id="deleteBtn" class="btn btn-sm btn-danger" >삭제</button>
+    </div>
+</div>
+
+
+
+<!--    <button id="modBtn" onclick="location.href='/board/update/<%=board.id%>'">수정</button>-->
+<!--    <button onclick="location.href='/board'">목록</button>-->
+<!--    <button id="deleteBtn">삭제</button>-->
+<!--    <div class="mb-3">-->
+<!--        <label for="title">제목</label>-->
+<!--        <input type="text" class="form-control" name="title" id="title" placeholder="제목을 입력해 주세요">-->
+<!--    </div>-->
+<!--    <div>제목 : <%= board.subject %></div>-->
+<!--    <div>작성자 : <%= board.writer %></div>-->
+<!--    <div>내용 : <%= board.content %></div>-->
+<!--    <div>작성일 : <%= dateParser.dateToBoardFormat(board.reg_date) %></div>-->
+<!--    <input id="boardId" type="hidden" name="id" value="<%= board.id %>"/>-->
+<!--    <div>-->
+<!--        <video controls width="250">-->
+<!--            <source src="/video/<%=board.video_path%>" type="video/mp4">-->
+<!--        </video>-->
+<!--    </div>-->
+</body>
+</html>
