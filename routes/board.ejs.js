@@ -2,7 +2,6 @@ const db = require("../modules");
 const {Op} = require("sequelize");
 const dateParser = require("../utility/dateParser");
 const boardValidator = require("../utility/boardValidator");
-const multer = require("multer");
 
 
 module.exports = (app,upload) => {
