@@ -7,5 +7,5 @@
       "description": "Board Swagger Test"
     }
   },
-  "apis": ["./*.js"]
+  "apis": ["./routes/*.js"]
 }
